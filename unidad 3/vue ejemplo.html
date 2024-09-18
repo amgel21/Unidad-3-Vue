@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+<div id="main">
+    
+
+    <hr>
+
+    <h2>Correo y Contraseña</h2>
+
+   
+    <input type="text" v-model="correo" placeholder="Escriba su correo">
+
+    
+    <input type="text" v-model="password" placeholder="Ingrese su password">
+
+    
+    <button @click="access">Access</button>
+
+    <hr>
+
+  
+    <h2>Lista de Usuarios</h2>
+    <ul>
+        <li v-for="(persona, index) in listadecorreo" :key="index">
+            {{ persona.correo }} - {{ persona.password }}
+        </li>
+    </ul>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                
+                correo: '',
+                password: '',
+                listadecorreos: [] 
+            }
+        },
+        methods: {
+            incrementarClick() {
+                this.clickContador++;
+            },
+            subirPersona() {
+                
+                if (this.correo && this.password) {
+                    
+                    this.listadecorreos.push({ nombre: this.correo, rol: this.password });
+                    
+                    
+                    this.correo = '';
+                    this.password= '';
+                } else {
+                    alert("Por favor, complete todos los campos.");
+                }
+            }
+        }
+    }).mount('#main');
+</script>
+
+</body>
+</html>
