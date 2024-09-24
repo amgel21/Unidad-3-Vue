@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>
+
+	</title>
+	<style type="text/css">
+		input{
+			background-color: gray;
+		}
+		table.customTable {
+		  width: 100%;
+		  background-color: #FFFFFF;
+		  border-collapse: collapse;
+		  border-width: 2px;
+		  border-color: #7EA8F8;
+		  border-style: solid;
+		  color: #000000;
+		}
+		table.customTable td, table.customTable th {
+		  border-width: 2px;
+		  border-color: #7EA8F8;
+		  border-style: solid;
+		  padding: 5px;
+		}
+		table.customTable thead {
+		  background-color: #7EA8F8;
+		}
+	</style>
+</head>
+<body>
+	<div id="main">
+
+	 
+		<hr>
+
+		<form @submit.prevent="login" v-if="!is_log"> 
+
+			<fieldset>
+				<label>
+					Email
+				</label>
+				<input type="email" v-model="email" placeholder="write here" name="" required>
+			</fieldset>
+
+			<fieldset>
+				<label>
+					Password
+				</label>
+				<input type="password" v-model="password" placeholder="write here" name="" required>
+			</fieldset>
+
+			<button type="submit">
+				Access
+			</button>
+
+
+		</form>
+
+		<h1 v-if="is_log">
+
+			Bienvenido usuario
+
+		</h1>
+
+		<div v-if="is_log">
+			<table class="customTable">
+			  <thead>
+				<tr>
+				  <th>Nombre</th>
+				  <th>Username</th>
+				  <th>Email</th>
+				  <th>Acciones</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				<tr v-for="(user, index) in users" :key="user.id">
+				  <td>{{ user.name }}</td>
+				  <td>{{ user.username }}</td>
+				  <td>{{ user.email }}</td>
+				  <td>
+					<button @click="editUser(index)">Editar</button>
+					<button @click="deleteUser(index)">Eliminar</button>
+				  </td>
+				</tr>
+			  </tbody>
+			</table>
+		  </div>
+		  <hr>
+		  
+		  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+		  <script>
+			const { createApp, ref } = Vue
+		  
+			createApp({
+			  setup() {
+				const name_app = ref('Mi primer app')
+				let email = ref('jsoto@uabcs.mx')
+				let password = ref('123123123')
+				let is_log = ref(false)
+				let users = ref([])
+		  
+				const editUser = (index) => {
+				  const user = users.value[index]
+				  const newName = prompt("Nuevo nombre:", user.name)
+				  const newUsername = prompt("Nuevo username:", user.username)
+				  const newEmail = prompt("Nuevo email:", user.email)
+				  
+				  if (newName && newUsername && newEmail) {
+					users.value[index] = { ...user, name: newName, username: newUsername, email: newEmail }
+				  }
+				}
+		  
+				const deleteUser = (index) => {
+				  if (confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
+					users.value.splice(index, 1)
+				  }
+				}
+		  
+				return {
+				  name_app,
+				  email,
+				  password,
+				  is_log,
+				  users,
+				  editUser,
+				  deleteUser
+				}
+			  },
+			  methods: {
+				login() {
+				  console.log(this.email)
+				  console.log(this.password)
+		  
+				  fetch("users.json")
+					.then(response => response.json())
+					.then(response => {
+					  response.forEach((e) => {
+						if (e.email == this.email && e.password == this.password) {
+						  this.is_log = true
+						  localStorage.setItem("user_data", JSON.stringify(e))
+						}
+					  })
+		  
+					  if (!this.is_log) {
+						alert("Verifique su información")
+					  }
+					})
+				}
+			  },
+			  mounted() {
+				fetch("users.json")
+				  .then(response => response.json())
+				  .then(response => {
+					this.users = response
+				  })
+				let user_data = localStorage.getItem("user_data")
+				if (user_data != null) {
+				  user_data = JSON.parse(user_data)
+				  this.is_log = true
+				}
+			  }
+			}).mount('#main')
+		  </script>
+		  </body>
+</html>
